@@ -1,0 +1,54 @@
+# Basic stuff to do
+
+
+1) Main menu with two options:
+	• User
+	• Administrator
+
+2) User menu with three options:
+	• List all places // List all places connected by the service in alphabetical order
+	• Search buses by route name // Bus stops visited by the bus and other details of the bus are displayed when its route number is entered for searching
+	• Bus timings // Bus timings of a particular bus or every bus reaching a particular bus stand are shown in order according to the user needs
+
+3) Administrator menu with 7 options: // Administrator menu is protected by password
+	• Add bus route/details // New bus route and other details can be added
+	• Modify bus route/details // Existing bus routes' details can be modified
+	• Delete bus route // Existing bus routes can be deleted
+	• Change password // Password for administrator menu can be changed
+	• Log out // For logging out to the main menu
+	• EXIT // To exit the interface
+
+User menu
+	List all places
+		• List all places connected by the service in alphabetical order.
+		• The user can choose their location and get the buses available in their location, their destinations and their time of arrival.
+		• The user can choose the destination to get the exact bus route names too.
+	Search buses by route name
+		• User, knowing the route name of a bus, can enter it and search its details.
+		• Details such as the bus stops visited by the bus, price and frequency are displayed.
+	Bus timings
+		• Bus route name can be entered to see its timings.
+		• Bus stop's name can be entered to see the timings of each bus reaching it.
+
+Administrator
+	Add bus route/details
+		• New bus route can be added to the file containing all the details.
+		• After entering all the details and confirming all the details will be written to the file.
+	Modify bus route/details
+		• Existing bus route can be modified by entering its route name or the initial place from which it is coming or the final place to which it is going.
+		• If multiple buses are there, then a question will be asked to confirm which bus' details are to be modified.
+		• After entering all the details and confirming all the details will be written to the file.
+	Delete bus route
+		• Existing bus route and its details can be deleted entirely just by entering its route name or the initial place from which it is coming or the final place to which it is going.
+		• If multiple buses are there, then a question will be asked to confirm which bus' details are to be deleted.
+	Change password
+		• Password for the administrator menu can be changed.
+	Log out
+		• Can log out to the main menu.
+	EXIT
+		• Can exit from the interface.
+
+//File implementation
+Optional:
+	* Adding feature to show buses according to time range.
+	* Adding feedback form.
