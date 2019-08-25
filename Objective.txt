@@ -53,7 +53,7 @@ Data structures
         • Linked list: Used to store all the places connected by the service alphabetically.
         • Doubly linked list: Used to store all the bus stops a particular bus goes to.
         • Graph: Used to connect all the places and find the shortest path.
-        • Circular queue: Used to display the buses available in a bus stand and their timings orderly.
+        // For now, not planned to be added • Circular queue: Used to display the buses available in a bus stand and their timings orderly.
 
 Classes
 	• Bus // This class is used to write data to the file. The file is read/written in binary mode. So, only the objects of Bus are written to the file.
