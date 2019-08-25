@@ -1,0 +1,75 @@
+# Basic stuff to do
+
+
+1) Main menu with two options:
+	• User
+	• Administrator
+
+2) User menu with three options:
+	• List all places // List all places connected by the service in alphabetical order
+	• Search buses by route name // Bus stops visited by the bus and other details of the bus are displayed when its route number is entered for searching
+	• Bus timings // Bus timings of a particular bus or every bus reaching a particular bus stand are shown in order according to the user needs
+
+3) Administrator menu with 7 options: // Administrator menu is protected by password
+	• Add bus route/details // New bus route and other details can be added
+	• Modify bus route/details // Existing bus routes' details can be modified
+	• Delete bus route // Existing bus routes can be deleted
+	• Change password // Password for administrator menu can be changed
+	• Log out // For logging out to the main menu
+	• EXIT // To exit the interface
+
+User menu
+	List all places
+		• List all places connected by the service in alphabetical order.
+		• The user can choose their location and destination to get the exact bus route names, timings (circular queue).
+		// Optional • The user can choose their location and get all the buses available in that location, their destinations and their time of arrival.
+	Search buses by route name
+		• User, knowing the route name of a bus, can enter it and search its details.
+		• Details such as the bus stops visited by the bus, price and frequency are displayed.
+	Bus timings
+		• Bus route name can be entered to see its timings.
+		• Bus stop's name can be entered to see the timings of each bus reaching it.
+
+Administrator
+	Add bus route/details
+		• New bus route can be added to the file containing all the details.
+		* After adding bus route, read from the file again, process data, and update the 'places/bus_stand' class.
+		• After entering all the details and confirming all the details will be written to the file.
+	Modify bus route/details
+		• Existing bus route can be modified by entering its route name or the initial place from which it is coming or the final place to which it is going.
+		• If multiple buses are there, then a question will be asked to confirm which bus' details are to be modified.
+		• After entering all the details and confirming all the details will be written to the file.
+	Delete bus route
+		• Existing bus route and its details can be deleted entirely just by entering its route name or the initial place from which it is coming or the final place to which it is going.
+		• If multiple buses are there, then a question will be asked to confirm which bus' details are to be deleted.
+	Change password
+		• Password for the administrator menu can be changed.
+	Log out
+		• Can log out to the main menu.
+	EXIT
+		• Can exit from the interface.
+
+Data structures
+        • Linked list: Used to store all the places connected by the service alphabetically.
+        • Doubly linked list: Used to store all the bus stops a particular bus goes to.
+        // Optional • Graph: Used to connect all the places and find the shortest path.
+        // For now, not planned to be added • Circular queue: Used to display the buses available in a bus stand and their timings orderly.
+
+Classes
+	• Bus // This class is used to write data to the file. The file is read/written in binary mode. So, only the objects of Bus are written to the file.
+	• Route // This class is not used to write data to the file.
+	// For now, this class is planned to not be added as function return_subsequent_timings() will take care of everything • Timing_queue // This class is not used to write data to the file. This is only used to process data from the file and display the details.
+
+Function
+	• return_subsequent_timings():
+		* This function would be a master function, that would deal with the bus routes and timings. If given a place, and a bus route name, it should return the subsequent arrival time of that bus in that place. Else, if only provided with location, it should return all the bus routes with their subsequent timings.
+		* When only the location is passed this function not only processes the buses coming to that location but it also sorts the buses according to the timings comparing with the system by storing the difference between the timings.
+		* This function is used for all functions in user menu.
+
+File implementation
+        • Details of every bus are stored using a class object and written into the binary file.
+        • When needed, the details are read by the class object and loaded into the data structures.
+
+Optional:
+	• Adding feedback form.
+	• Shortest path.
