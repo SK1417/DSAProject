@@ -56,9 +56,9 @@ Data structures
         • Circular queue: Used to display the buses available in a bus stand and their timings orderly.
 
 Function:
-	* This function would be a master function, that would deal with the bus routes and timings. If given a place, and a 		bus route name, it should return the subsequent arrival time of that bus in that place. Else, if only provided
-	   with location, it should return all the bus routes with their subsequent timings.
-	* This function is used for all functions in user menu
+	• return_subsequent_timings():
+		* This function would be a master function, that would deal with the bus routes and timings. If given a place, and a bus route name, it should return the subsequent arrival time of that bus in that place. Else, if only provided with location, it should return all the bus routes with their subsequent timings.
+		* This function is used for all functions in user menu
 
 File implementation
         • Details of every bus routes are stored using a class object and written into the binary file.
