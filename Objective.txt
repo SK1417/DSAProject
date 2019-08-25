@@ -33,6 +33,7 @@ User menu
 Administrator
 	Add bus route/details
 		• New bus route can be added to the file containing all the details.
+		* After adding bus route, read from the file again, process data, and update the 'places/bus_stand' class.
 		• After entering all the details and confirming all the details will be written to the file.
 	Modify bus route/details
 		• Existing bus route can be modified by entering its route name or the initial place from which it is coming or the final place to which it is going.
