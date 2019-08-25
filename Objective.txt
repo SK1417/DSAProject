@@ -56,18 +56,19 @@ Data structures
         • Circular queue: Used to display the buses available in a bus stand and their timings orderly.
 
 Classes
-	• Bus
-	• Route // 
+	• Bus // This class is used to write data to the file. The file is read/written in binary mode. So, only the objects of Bus are written to the file.
+	• Route // This class is not used to write data to the file.
 	// For now, this class is planned to not be added as function return_subsequent_timings() will take care of everything • Timing_queue // This class is not used to write data to the file. This is only used to process data from the file and display the details.
 
 Function
 	• return_subsequent_timings():
 		* This function would be a master function, that would deal with the bus routes and timings. If given a place, and a bus route name, it should return the subsequent arrival time of that bus in that place. Else, if only provided with location, it should return all the bus routes with their subsequent timings.
-		* This function is used for all functions in user menu
+		* When only the location is passed this function not only processes the buses coming to that location but it also sorts the buses according to the timings comparing with the system by storing the difference between the timings.
+		* This function is used for all functions in user menu.
 
 File implementation
-        • Details of every bus routes are stored using a class object and written into the binary file.
-        • When needed the details are read by the class object and loaded into the data structure.
+        • Details of every bus are stored using a class object and written into the binary file.
+        • When needed, the details are read by the class object and loaded into the data structures.
 
 Optional:
 	* Adding feedback form.
