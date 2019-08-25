@@ -21,8 +21,8 @@
 User menu
 	List all places
 		• List all places connected by the service in alphabetical order.
-		• The user can choose their location and get the buses available in their location, their destinations and their time of arrival.
-		• The user can choose the destination to get the exact bus route names too.
+		• The user can choose their location and destination to get the exact bus route names, timings (circular queue).
+		// Optional • The user can choose their location and get all the buses available in that location, their destinations and their time of arrival.
 	Search buses by route name
 		• User, knowing the route name of a bus, can enter it and search its details.
 		• Details such as the bus stops visited by the bus, price and frequency are displayed.
