@@ -8,7 +8,7 @@ struct Route {
 }Bus_Route[50];
 
 struct Bus {
-	char route_name[5];
+	char route_no[5];
 	int hours;
 	int minutes;
 	char route_name[50][30];
