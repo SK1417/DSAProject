@@ -11,6 +11,7 @@ struct Bus {
 	char route_no[5];
 	int hours;
 	int minutes;
+	int freq;
 	char route_name[50][30];
 }bus[10];
 
