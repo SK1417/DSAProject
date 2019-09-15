@@ -22,6 +22,10 @@ class Bus {
 	string place_name[50];
 };
 
+void menu(fstream &, Bus [], Route [], int *);
+void user(Bus [], Route [], int *);
+void admin(fstream &, Bus [], Route [], int *);
+
 void list_all_places(Bus bus[], Route route[], int *no_of_buses) {
 	
 }
@@ -31,12 +35,13 @@ void list_all_routes(Bus bus[], Route route[], int *no_of_buses) {
 }
 
 void add_bus_route(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
-	system("CLS");
+	system("clear");
+	file.seekg(0);
 	char ch;
 	cout<<"Do you want to add a new bus route? (Y/N) ";
+	cin>>ch;
 	if(ch != 'Y' || ch != 'y')
 		return ;
-	char place_name[30];
 	cout<<"Enter the details of the bus:\n";
 	cout<<"Enter the route number: ";
 	cin>>bus[*no_of_buses].route_num;
@@ -58,7 +63,7 @@ void add_bus_route(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
 	while(ch == 'Y' || ch == 'y') {
 		temp = new Route;
 		cin.getline(temp->place, 30);
-		strcpy(bus[*no_of_buses].place_name[i++], temp->place);
+		bus[*no_of_buses].place_name[i++] = temp->place;
 		temp->Prev = ptr;
 		temp->Next = NULL;
 		ptr->Next = temp;
@@ -79,9 +84,11 @@ void add_bus_route(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
 }
 
 void modify_bus_route(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
-	system("CLS");
+	system("clear");
+	file.seekg(0);
 	char ch;
 	cout<<"Do you want to modify an existing bus route? (Y/N) ";
+	cin>>ch;
 	if(ch != 'Y' || ch != 'y')
 		return ;
 	int i, n = -1;
@@ -162,7 +169,7 @@ void modify_bus_route(fstream& file, Bus bus[], Route route[], int *no_of_buses)
 		Route *ptr = route[*no_of_buses].Next;
 		i=0;
 		while(ptr != NULL) {
-			strcpy(bus[*no_of_buses].place_name[i++], ptr->place);									// Here problem comes as extra strings at the end which were deleted (not indexed) will also be there when writing to the file
+			bus[*no_of_buses].place_name[i++] = ptr->place;									// Here problem comes as extra strings at the end which were deleted (not indexed) will also be there when writing to the file
 			ptr = ptr->Next;
 		}
 		file.seekg((n - 1) * sizeof(Bus));
@@ -174,15 +181,16 @@ void modify_bus_route(fstream& file, Bus bus[], Route route[], int *no_of_buses)
 }
 
 void delete_bus_route(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
-	
+	file.seekg(0);
 }
 
 void change_password() {
-	system("CLS");
+	system("clear");
 	fstream f;
-	f.open("Password.dat", ios::in | ios::app | ios::binary | ios::nocreate);                                                                                               //For now, error turns up saying nocreate is not a member of std::ios
+	f.open("Password.dat", fstream::in | fstream::app | fstream::binary);
+	f.seekg(0);
 	char ch, pass[20], check[20];
-	if(!f) {
+	if(f.eof()) {																																																				//The only error is that when the file is empty f.eof() gives 0 as output instead of 1
 		cout<<"Password is not created yet... It is highly recommended to create a password! Do you want to create one now? (Y/N) ";
 		cin>>ch;
 		while(ch == 'Y' || ch == 'y') {
@@ -191,10 +199,9 @@ void change_password() {
 			cout<<"Confirm your password: ";
 			cin>>check;
 			if(strcmp(pass, check) == 0) {
-				cout<<"Do you want to have this as your password? (Y/N)";
+				cout<<"Do you want to have this as your password? (Y/N) ";
 				cin>>ch;
 				if(ch == 'Y' || ch == 'y') {
-					f.open("Password.dat", ios::in | ios::binary);
 					f.write((char *) &pass, sizeof(char[20]));
 					cout<<"The password was created successfully";
 					ch = 'N';
@@ -215,11 +222,11 @@ void change_password() {
 	}
 	else {
 		char change_pass[20];
-		f.seekg(0);
 		f.read((char *) &pass, sizeof(char[20]));
 		cout<<"Enter your current password: ";
 		cin>>check;
 		if(strcmp(check, pass) == 0) {
+			ch = 'Y';
 			while(ch == 'Y' || ch == 'y') {
 				cout<<"Enter the new password: ";
 				cin>>change_pass;
@@ -227,16 +234,20 @@ void change_password() {
 				cin>>check;
 				if(strcmp(change_pass, check) == 0) {
 					cout<<"Do you really want to change the password? (Y/N)";
+					cin>>ch;
 					if(ch == 'Y' || ch == 'y') {
-						f.seekg(0);
+						f.close();
+						f.open("Password.dat", fstream::out | fstream::binary);
 						f.write((char *) &change_pass, sizeof(char[20]));
 						cout<<"The password was successfully changed! Press any key to continue...";
 						cin.get();
 						ch = 'N';
+						f.close();
 					}
 					else {
 						cout<<"The password wasn't changed. Press any key to go back...'";
 						cin.get();
+						f.close();
 						return;
 					}
 				}
@@ -249,24 +260,21 @@ void change_password() {
 		else {
 			cout<<"The password entered is wrong. Press any key to continue...";
 			cin.get();
+			f.close();
 		}
 		return;
 	}
 }
 
-void menu(fstream &, Bus *[], Route *[], int *);
-void user(Bus *[], Route *[], int *);
-void admin(fstream &, Bus *[], Route *[], int *);
-
 void menu(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
-	system("CLS");
+	system("clear");
 	cout<<"1. User\n2. Admin\nChoose an option: ";
 	int option;
 	cin>>option;
 	if(option == 1)
-		user(&bus, &route, no_of_buses);																														//There is a confusion with passing bus route as pointers as it is an array of objects
+		user(bus, route, no_of_buses);
 	else if(option == 2)
-		admin(file, &bus, &route, no_of_buses);
+		admin(file, bus, route, no_of_buses);
 	else {
 		cout<<"You have entered a wrong option. Press any key to go back... ";
 		cin.get();
@@ -277,20 +285,22 @@ void menu(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
 
 void admin(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
 	ifstream fin;
-	fin.open("Password.dat", ios::in | ios::binary);
+	fin.open("Password.dat", fstream::in | fstream::binary);
 	char pass[20], check[20];
 	if(fin) {
-		system("CLS");
-		fin.read((char *) &pass, sizeof(char[20]));
+		system("clear");
+		fin.read((char *) &pass, sizeof(char [20]));
 		cout<<"Enter the password to continue: ";
 		cin>>check;
-		if(strcmp(pass, check) == 1) {
+		if(strcmp(pass, check) != 0) {
+			fin.close();
 			cout<<"The password entered is wrong. Press any key to go back...";
 			cin.get();
 			return;
 		}
 	}
-	system("CLS");
+	fin.close();
+	system("clear");
 	cout<<"1. Add bus route\n2. Modify bus route\n3. Delete bus route\n4. Change password\n5. Log Out\n6. Exit\nChoose an option: ";
 	int option;
 	cin>>option;
@@ -308,7 +318,7 @@ void admin(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
 		menu(file, bus, route, no_of_buses);
 	}
 	else if(option == 6) {
-		cout<<"Are you really sure you want to exit? y/n";
+		cout<<"Do you really want to exit? (Y/N) ";
 		char ch;
 		cin>>ch;
 		if(ch == 'y' || ch == 'Y')
@@ -325,7 +335,7 @@ void admin(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
 }
 
 void user(Bus bus[], Route route[], int *no_of_buses) {
-	system("CLS");
+	system("clear");
 	cout<<"1. List all places\n2. List bus routes\n3. Go back\nChoose an option: ";
 	int option;
 	cin>>option;
@@ -344,10 +354,10 @@ void user(Bus bus[], Route route[], int *no_of_buses) {
 }
 
 int main() {
-	system("CLS");
+	system("clear");
 	Bus bus[100];
 	Route route[100];
-	fstream file("Buses.dat", ios::app | ios::in | ios::binary);
+	fstream file("Buses.dat", fstream::app | fstream::in | fstream::binary);
 	file.seekg(0);
 	int no_of_buses = 0;
 	while(!file.eof()) {
