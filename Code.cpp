@@ -275,21 +275,21 @@ void change_password() {
 int menu(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
 	system("clear");
 	cout<<"Menu\n1. User\n2. Admin\nChoose an option: ";
-	int flag = -1;
+	int flag = 1;
 	char option;
 	cin>>option;
 	if(option == '1')
-		while(flag == -1)
+		while(flag == 1)
 			flag = user(bus, route, no_of_buses);
 	else if(option == '2')
-		while(flag == -1)	
+		while(flag == 1)	
 			flag = admin(file, bus, route, no_of_buses);
 	else {
 		cin.get();
 		cout<<"You have entered a wrong option. Press any key to go back... ";
 		cin.get();
 	}
-	return -1;
+	return 1;
 }
 
 int admin(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
@@ -356,7 +356,7 @@ int user(Bus bus[], Route route[], int *no_of_buses) {
 		cin.get();
 		cout<<"You have entered a wrong option. Press any key to go back... ";
 		cin.get();
-		return -1;
+		return 1;
 	}
 }
 
@@ -366,11 +366,11 @@ int main() {
 	Route route[100];
 	fstream file("Buses.dat", fstream::app | fstream::in | fstream::binary);
 	file.seekg(0);
-	int no_of_buses = 0, flag = -1;
+	int no_of_buses = 0, flag = 1;
 	while(!file.eof()) {
 		file.read((char*) &bus[no_of_buses++], sizeof(bus));
 	}
-	while(flag == -1)
+	while(flag == 1)
 		flag = menu(file, bus, route, &no_of_buses);
 	return 0;
 }
