@@ -22,9 +22,9 @@ class Bus {
 	string place_name[50];
 };
 
-void menu(fstream &, Bus [], Route [], int *);
-void user(Bus [], Route [], int *);
-void admin(fstream &, Bus [], Route [], int *);
+int menu(fstream &, Bus [], Route [], int *);
+int user(Bus [], Route [], int *);
+int admin(fstream &, Bus [], Route [], int *);
 
 void list_all_places(Bus bus[], Route route[], int *no_of_buses) {
 	
@@ -187,10 +187,9 @@ void delete_bus_route(fstream& file, Bus bus[], Route route[], int *no_of_buses)
 void change_password() {
 	system("clear");
 	fstream f;
-	f.open("Password.dat", fstream::in | fstream::app | fstream::binary);
-	f.seekg(0);
+	f.open("Password.dat");
 	char ch, pass[20], check[20];
-	if(f.eof()) {																																																				//The only error is that when the file is empty f.eof() gives 0 as output instead of 1
+	if(!f) {																																																				//The only error is that when the file is empty f.eof() gives 0 as output instead of 1
 		cout<<"Password is not created yet... It is highly recommended to create a password! Do you want to create one now? (Y/N) ";
 		cin>>ch;
 		while(ch == 'Y' || ch == 'y') {
@@ -202,17 +201,22 @@ void change_password() {
 				cout<<"Do you want to have this as your password? (Y/N) ";
 				cin>>ch;
 				if(ch == 'Y' || ch == 'y') {
+					f.open("Password.dat", fstream::in | fstream::app | fstream::binary);
+					f.seekg(0);
 					f.write((char *) &pass, sizeof(char[20]));
-					cout<<"The password was created successfully";
+					cin.get();
+					cout<<"The password was created successfully. ";
 					ch = 'N';
 				}
 				else {
+					cin.get();
 					cout<<"The password wasn't created. Press any key to go back...";
 					cin.get();
 					return;
 				}
 			}
 			else {
+				cin.get();
 				cout<<"The password didn't match."<<endl;
 				ch = 'Y';
 			}
@@ -223,7 +227,7 @@ void change_password() {
 	}
 	else {
 		char change_pass[20];
-		f.read((char *) &pass, sizeof(char[20]));
+		f.read((char *) &pass, sizeof(char [20]));
 		cout<<"Enter your current password: ";
 		cin>>check;
 		if(strcmp(check, pass) == 0) {
@@ -234,7 +238,7 @@ void change_password() {
 				cout<<"Confirm the new password: ";
 				cin>>check;
 				if(strcmp(change_pass, check) == 0) {
-					cout<<"Do you really want to change the password? (Y/N)";
+					cout<<"Do you really want to change the password? (Y/N) ";
 					cin>>ch;
 					if(ch == 'Y' || ch == 'y') {
 						f.close();
@@ -259,6 +263,7 @@ void change_password() {
 			}	
 		}
 		else {
+			cin.get();
 			cout<<"The password entered is wrong. Press any key to continue...";
 			cin.get();
 			f.close();
@@ -267,91 +272,92 @@ void change_password() {
 	}
 }
 
-void menu(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
+int menu(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
 	system("clear");
-	cout<<"1. User\n2. Admin\nChoose an option: ";
-	int option;
+	cout<<"Menu\n1. User\n2. Admin\nChoose an option: ";
+	int flag = -1;
+	char option;
 	cin>>option;
-	if(option == 1)
-		user(bus, route, no_of_buses);
-	else if(option == 2)
-		admin(file, bus, route, no_of_buses);
+	if(option == '1')
+		while(flag == -1)
+			flag = user(bus, route, no_of_buses);
+	else if(option == '2')
+		while(flag == -1)	
+			flag = admin(file, bus, route, no_of_buses);
 	else {
+		cin.get();
 		cout<<"You have entered a wrong option. Press any key to go back... ";
 		cin.get();
-		menu(file, bus, route, no_of_buses);
 	}
-	menu(file, bus, route, no_of_buses);
+	return -1;
 }
 
-void admin(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
+int admin(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
 	ifstream fin;
 	fin.open("Password.dat", fstream::in | fstream::binary);
 	char pass[20], check[20];
 	if(fin) {
 		system("clear");
 		fin.read((char *) &pass, sizeof(char [20]));
-		cout<<"Enter the password to continue: ";
+		cout<<"Enter the password to access the Admin menu: ";
 		cin>>check;
 		if(strcmp(pass, check) != 0) {
 			fin.close();
+			cin.get();
 			cout<<"The password entered is wrong. Press any key to go back...";
 			cin.get();
-			return;
+			return 0;
 		}
 	}
 	fin.close();
-	system("clear");
-	cout<<"1. Add bus route\n2. Modify bus route\n3. Delete bus route\n4. Change password\n5. Log Out\n6. Exit\nChoose an option: ";
-	int option;
-	cin>>option;
-	if(option == 1)
-		add_bus_route(file, bus, route, no_of_buses);
-	else if(option == 2)
-		modify_bus_route(file, bus, route, no_of_buses);
-	else if(option == 3)
-		delete_bus_route(file, bus, route, no_of_buses);
-	else if(option == 4) {
-		change_password();
-		admin(file, bus, route, no_of_buses);
+	int flag = 1;
+	while(flag) {
+		system("clear");
+		cout<<"1. Add bus route\n2. Modify bus route\n3. Delete bus route\n4. Change password\n5. Log Out\n6. Exit\nChoose an option: ";
+		char option;
+		cin>>option;
+		if(option == '1')
+			add_bus_route(file, bus, route, no_of_buses);
+		else if(option == '2')
+			modify_bus_route(file, bus, route, no_of_buses);
+		else if(option == '3')
+			delete_bus_route(file, bus, route, no_of_buses);
+		else if(option == '4')
+			change_password();
+		else if(option == '5')
+			return 0;
+		else if(option == '6') {
+			cout<<"Do you really want to exit? (Y/N) ";
+			char ch;
+			cin>>ch;
+			if(ch == 'y' || ch == 'Y')
+				exit(0);
+		}
+		else {
+			cin.get();
+			cout<<"You have entered a wrong option. Press any key to go back... ";
+			cin.get();
+		}
 	}
-	else if(option == 5) {
-		menu(file, bus, route, no_of_buses);
-	}
-	else if(option == 6) {
-		cout<<"Do you really want to exit? (Y/N) ";
-		char ch;
-		cin>>ch;
-		if(ch == 'y' || ch == 'Y')
-			exit(0);
-		else
-			admin(file, bus, route, no_of_buses);
-	}
-	else {
-		cout<<"You have entered a wrong option. Press any key to go back... ";
-		cin.get();
-		admin(file, bus, route, no_of_buses);
-	}
-	admin(file, bus, route, no_of_buses);
 }
 
-void user(Bus bus[], Route route[], int *no_of_buses) {
+int user(Bus bus[], Route route[], int *no_of_buses) {
 	system("clear");
 	cout<<"1. List all places\n2. List bus routes\n3. Go back\nChoose an option: ";
-	int option;
+	char option;
 	cin>>option;
-	if(option == 1)
+	if(option == '1')
 		list_all_places(bus, route, no_of_buses);
-	else if(option == 2)
+	else if(option == '2')
 		list_all_routes(bus, route, no_of_buses);
-	else if(option == 3)
-		return;
+	else if(option == '3')
+		return 0;
 	else {
+		cin.get();
 		cout<<"You have entered a wrong option. Press any key to go back... ";
 		cin.get();
-		user(bus, route, no_of_buses);
+		return -1;
 	}
-	user(bus, route, no_of_buses);
 }
 
 int main() {
@@ -360,11 +366,11 @@ int main() {
 	Route route[100];
 	fstream file("Buses.dat", fstream::app | fstream::in | fstream::binary);
 	file.seekg(0);
-	int no_of_buses = 0;
+	int no_of_buses = 0, flag = -1;
 	while(!file.eof()) {
 		file.read((char*) &bus[no_of_buses++], sizeof(bus));
 	}
-	menu(file, bus, route, &no_of_buses);
-	file.close();
+	while(flag == -1)
+		flag = menu(file, bus, route, &no_of_buses);
 	return 0;
 }
