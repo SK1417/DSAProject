@@ -206,10 +206,11 @@ void change_password() {
 					cout<<"The password was created successfully";
 					ch = 'N';
 				}
-				else
+				else {
 					cout<<"The password wasn't created. Press any key to go back...";
 					cin.get();
 					return;
+				}
 			}
 			else {
 				cout<<"The password didn't match."<<endl;
