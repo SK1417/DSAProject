@@ -372,5 +372,6 @@ int main() {
 	}
 	while(flag == 1)
 		flag = menu(file, bus, route, &no_of_buses);
+
 	return 0;
 }
