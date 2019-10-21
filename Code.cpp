@@ -7,14 +7,14 @@ using namespace std;
 
 class Route {
 	public:
-	char place[30];
+	string place;
 	Route *Next;
 	Route *Prev;
 };
 
 class Bus {
 	public:
-	char route_num[5];
+	string route_num;
 	int first_serv_hour;
 	int first_serv_min;
 	int freq;
@@ -40,7 +40,7 @@ void add_bus_route(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
 	char ch;
 	cout<<"Do you want to add a new bus route? (Y/N) ";
 	cin>>ch;
-	if(ch != 'Y' || ch != 'y')
+	if(ch == 'N' || ch == 'n')
 		return ;
 	cout<<"Enter the details of the bus:\n";
 	cout<<"Enter the route number: ";
@@ -51,32 +51,40 @@ void add_bus_route(fstream& file, Bus bus[], Route route[], int *no_of_buses) {
 	cin>>bus[*no_of_buses].first_serv_min;
 	cout<<"Enter the frequency of this bus: ";
 	cin>>bus[*no_of_buses].freq;
+	int i, no;
+	cout<<"Enter the no. of places connected by this service: ";
+	cin>>no;
 	cout<<"Enter the places connected by this bus starting from the source upto the destination:\n";
-	int i = 0;
 	Route *temp;
-	strcpy(route[*no_of_buses].place, bus[*no_of_buses].route_num);
+	route[*no_of_buses].place = bus[*no_of_buses].route_num;
 	route[*no_of_buses].Next = new Route;
 	Route *ptr = route[*no_of_buses].Next;
 	ptr->Prev = &route[*no_of_buses];
 	ptr->Next = NULL;
-	ch = 'Y';
-	while(ch == 'Y' || ch == 'y') {
+	cin.get();
+	for(i = 0; i < no; i++) {
+		cout<<i+1<<" ";
 		temp = new Route;
-		cin.getline(temp->place, 30);
-		bus[*no_of_buses].place_name[i++] = temp->place;
+		getline(cin, temp->place);
+		bus[*no_of_buses].place_name[i] = temp->place;
 		temp->Prev = ptr;
 		temp->Next = NULL;
 		ptr->Next = temp;
 		ptr = temp;
-		cout<<"Do you want to add more bus stops? (Y/N) ";
-		cin>>ch;
 	}
 	cout<<"Do you want to add the details of this bus to the existing database? (Y/N) ";
 	cin>>ch;
 	if(ch == 'Y' || ch == 'y') {
 		file.write((char *) &bus[*no_of_buses], sizeof(Bus));
 		*no_of_buses += 1;
+		bus[*no_of_buses].no_of_bus_stops = no;
+		cin.get();
 		cout<<"Details of the bus were successfully added! Press any key to continue...";
+		cin.get();
+	}
+	else {
+		cin.get();
+		cout<<"Details of the bus were not added to the database. Press any key to continue...";
 		cin.get();
 	}
 	delete ptr;
@@ -96,7 +104,7 @@ void modify_bus_route(fstream& file, Bus bus[], Route route[], int *no_of_buses)
 	cout<<"Enter the route number of the bus whose details are to be modified: ";
 	cin>>route_num;
 	for(i = 0; i<*no_of_buses; i++)
-		if(!strcmp(bus[i].route_num, route_num))
+		if(bus[i].route_num == route_num)
 			n = i;
 	if(n == -1) {
 		cout<<"No bus with the specified route number was found\n";
@@ -189,7 +197,7 @@ void change_password() {
 	fstream f;
 	f.open("Password.dat");
 	char ch, pass[20], check[20];
-	if(!f) {																																																				//The only error is that when the file is empty f.eof() gives 0 as output instead of 1
+	if(!f) {
 		cout<<"Password is not created yet... It is highly recommended to create a password! Do you want to create one now? (Y/N) ";
 		cin>>ch;
 		while(ch == 'Y' || ch == 'y') {
@@ -372,6 +380,5 @@ int main() {
 	}
 	while(flag == 1)
 		flag = menu(file, bus, route, &no_of_buses);
-
 	return 0;
 }
