@@ -67,7 +67,7 @@ void add_bus_route(int *no_of_buses) {
 	for(i = 0; i < bus[*no_of_buses].no_of_bus_stops; i++) {
 		cout<<i+1<<". ";
 		temp = new Route;
-		scanf("%[^\n]s", temp->place);
+		cin.getline(temp->place, 30);
 		strcpy(bus[*no_of_buses].place_name[i], temp->place);
 		temp->Prev = ptr;
 		temp->Next = NULL;
@@ -77,6 +77,7 @@ void add_bus_route(int *no_of_buses) {
 	cout<<"Do you want to add the details of this bus to the existing database? (Y/N) ";
 	cin>>ch;
 	if(ch == 'Y' || ch == 'y') {
+		file.seekg(0, fstream::end);
 		file.write((char *) &bus[*no_of_buses], sizeof(Bus));
 		*no_of_buses += 1;
 		cin.get();
@@ -111,7 +112,7 @@ void delete_bus_route(int *no_of_buses) {
 				cout<<"Details of the route number specified were deleted successfully. Press any key to continue...";
 				cin.get();
 				file.close();
-				file.open("Buses.dat", fstream::in | fstream::out | fstream::binary);
+				file.open("Buses.dat", fstream::in | fstream::out | fstream::trunc | fstream::binary);
 				file.close();
 				file.open("Buses.dat", fstream::in | fstream::app | fstream::binary);
 				return ;
@@ -124,7 +125,8 @@ void delete_bus_route(int *no_of_buses) {
 				cout<<"Details of the route number specified were deleted successfully. Press any key to continue...";
 				cin.get();
 				file.close();
-				file.open("Buses.dat", fstream::in | fstream::out | fstream::binary);
+				file.open("Buses.dat", fstream::in | fstream::out | fstream::trunc | fstream::binary);
+				file.seekg(0);
 				for(j = 0; j < *no_of_buses; j++)
 					file.write((char *) &bus[j], sizeof(Bus));
 				file.close();
@@ -158,19 +160,23 @@ void display_bus_routes(int *no_of_buses) {
 		cout<<"Enter the no. of the bus to display its details: ";
 		cin>>i;
 		i--;
-		cout<<endl<<"Route number: ";
-		cout<<bus[i].route_num<<endl;
-		cout<<"Hour of first service (in 24 hours format): ";
-		cout<<bus[i].first_serv_hour<<endl;
-		cout<<"Minute of first service: ";
-		cout<<bus[i].first_serv_min<<endl;
-		cout<<"Frequency of this bus (no. of times per hour): ";
-		cout<<bus[i].freq<<endl;
-		cout<<"No. of places connected by this service: ";
-		cout<<bus[i].no_of_bus_stops<<endl;
-		cout<<"Places connected by this bus starting from the source upto the destination:\n";
-		for(j = 0; j < bus[i].no_of_bus_stops; j++)
-			cout<<j+1<<". "<<bus[i].place_name[j]<<endl;
+		if(i < *no_of_buses && i >= 0) {
+			cout<<endl<<"Route number: ";
+			cout<<bus[i].route_num<<endl;
+			cout<<"Hour of first service (in 24 hours format): ";
+			cout<<bus[i].first_serv_hour<<endl;
+			cout<<"Minute of first service: ";
+			cout<<bus[i].first_serv_min<<endl;
+			cout<<"Frequency of this bus (no. of times per hour): ";
+			cout<<bus[i].freq<<endl;
+			cout<<"No. of places connected by this service: ";
+			cout<<bus[i].no_of_bus_stops<<endl;
+			cout<<"Places connected by this bus starting from the source upto the destination:\n";
+			for(j = 0; j < bus[i].no_of_bus_stops; j++)
+				cout<<j+1<<". "<<bus[i].place_name[j]<<endl;
+		}
+		else
+			cout<<"You've entered the wrong number. ";
 	}
 	cin.get();
 	cout<<"Press any key to continue...";
