@@ -157,7 +157,7 @@ void display_bus_routes(int *no_of_buses) {
 	cout<<"Do you want to view the details of any bus? (Y/N) ";
 	cin>>ch;
 	if(ch == 'Y' || ch == 'y') {
-		cout<<"Enter the no. of the bus to display its details: ";
+		cout<<"Enter the index of the bus to display its details: ";
 		cin>>i;
 		i--;
 		if(i < *no_of_buses && i >= 0) {
@@ -288,7 +288,7 @@ int menu(int *no_of_buses) {
 		cout<<"You have entered a wrong option. Press any key to go back... ";
 		cin.get();
 	}
-	if(flag == 0)
+	if(flag == -1)
 		return 0;
 	return 1;
 }
@@ -333,7 +333,7 @@ int admin(int *no_of_buses) {
 			char ch;
 			cin>>ch;
 			if(ch == 'y' || ch == 'Y')
-				return 0;
+				return -1;
 			else
 				return 1;
 		}
