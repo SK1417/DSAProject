@@ -11,7 +11,7 @@ class Route {
 	char place[30];
 	Route *Next;
 	Route *Prev;
-}route[100];
+};
 
 class Bus {
 	public:
@@ -21,14 +21,13 @@ class Bus {
 	int freq;
 	int no_of_bus_stops;
 	char place_name[50][30];
-}bus[100];
+};
 
-int menu(int *);
-int user(int *);
-int admin(int *);
-fstream file;
+int menu(fstream &, Bus [], Route [], int *);
+int user(Bus [], int *);
+int admin(fstream &, Bus [], Route [], int *);
 
-Bus search_for_route(string route_num, int *no_of_buses) {
+Bus search_for_route(string route_num, Bus bus[], int *no_of_buses) {
     for(int i = 0; i < *no_of_buses; i++) {
             if(bus[i].route_num == route_num) {
                 return bus[i];
@@ -46,14 +45,14 @@ bool search_for_buses(Bus bus, string place) {
     return temp;
 }
 
-void return_subsequent_timings(char place[], int *no_of_buses, string route_num = "null") {
+void return_subsequent_timings(char place[], Bus bus[], int *no_of_buses, string route_num = "null") {
     time_t tt = time(0);
     tm* now = localtime(&tt);
     int curr_hour = now->tm_hour;
     int curr_min = now->tm_min;
     int curr_time = curr_hour*60 + curr_min;
     if(route_num != "null") {
-        Bus specified_bus = search_for_route(route_num, no_of_buses);
+        Bus specified_bus = search_for_route(route_num, bus, no_of_buses);
         int i, index_of_route = 0;
         for(i = 0; i < specified_bus.no_of_bus_stops; i++) 
             if(strcmp(specified_bus.place_name[i], place) == 0) {
@@ -70,20 +69,22 @@ void return_subsequent_timings(char place[], int *no_of_buses, string route_num 
     else {
         for(int i = 0; i < *no_of_buses; i++) {
             if(search_for_buses(bus[i], place))
-                return_subsequent_timings(place, no_of_buses, bus[i].route_num);
+                return_subsequent_timings(place, bus, no_of_buses, bus[i].route_num);
         }
     }
 }
 
-void list_all_places(int *no_of_buses) {
+void list_all_places(Bus bus[], int *no_of_buses) {
 	
 }
 
-void list_all_routes(int *no_of_buses) {
+void list_all_routes(Bus bus[], int *no_of_buses) {
 	system("clear");
 	if(*no_of_buses == 0) {
+		cin.get();
 		cout<<"The directory is empty. Press any key to continue...";
 		cin.get();
+		return ;
 	}
 	cout<<"List of bus routes: \n";
     for(int i = 0; i < *no_of_buses; i++)
@@ -104,11 +105,11 @@ void list_all_routes(int *no_of_buses) {
         cout<<endl<<"Bus Details \nRoute number: "<<bus[choice - 1].route_num<<endl;
         cout<<bus[choice - 1].place_name[0]<<" to "<<bus[choice - 1].place_name[bus[choice - 1].no_of_bus_stops - 1]<<endl;
         cout<<"Frequency: Every "<<(60 / bus[choice - 1].freq)<<" minutes"<<endl;
-        return_subsequent_timings(bus[choice - 1].place_name[c2 - 1], no_of_buses, bus[choice - 1].route_num);
+        return_subsequent_timings(bus[choice - 1].place_name[c2 - 1], bus, no_of_buses, bus[choice - 1].route_num);
     }
 }
 
-void add_bus_route(int *no_of_buses) {
+void add_bus_route(fstream &file, Bus bus[], Route route[], int *no_of_buses) {
 	system("clear");
 	file.seekg(0);
 	char ch;
@@ -165,7 +166,7 @@ void add_bus_route(int *no_of_buses) {
 	delete ptr;
 }
 
-void delete_bus_route(int *no_of_buses) {
+void delete_bus_route(fstream &file, Bus bus[], Route route[], int *no_of_buses) {
 	system("clear");
 	file.seekg(0);
 	char ch;
@@ -191,8 +192,10 @@ void delete_bus_route(int *no_of_buses) {
 				return ;
 			}
 			else {
-				for(j = i; j < *no_of_buses - 1; j++)
-					bus[j] = bus[j+1];
+				for(j = i; j < *no_of_buses - 1; j++) {
+					bus[j] = bus[j + 1];
+					route[j] = route[j + 1];
+				}
 				*no_of_buses -= 1;
 				cin.get();
 				cout<<"Details of the route number specified were deleted successfully. Press any key to continue...";
@@ -213,7 +216,7 @@ void delete_bus_route(int *no_of_buses) {
 	cin.get();
 }
 
-void display_bus_routes(int *no_of_buses) {
+void display_bus_routes(Bus bus[], int *no_of_buses) {
 	system("clear");
 	int i, j;
 	char ch;
@@ -344,7 +347,7 @@ void change_password() {
 	}
 }
 
-int menu(int *no_of_buses) {
+int menu(fstream &file, Bus bus[], Route route[], int *no_of_buses) {
 	system("clear");
 	cout<<"Menu\n1. User\n2. Admin\nChoose an option: ";
 	int flag = 1;
@@ -352,10 +355,10 @@ int menu(int *no_of_buses) {
 	cin>>option;
 	if(option == '1')
 		while(flag == 1)
-			flag = user(no_of_buses);
+			flag = user(bus, no_of_buses);
 	else if(option == '2')
 		while(flag == 1)	
-			flag = admin(no_of_buses);
+			flag = admin(file, bus, route, no_of_buses);
 	else {
 		cin.get();
 		cout<<"You have entered a wrong option. Press any key to go back... ";
@@ -366,7 +369,7 @@ int menu(int *no_of_buses) {
 	return 1;
 }
 
-int admin(int *no_of_buses) {
+int admin(fstream &file, Bus bus[], Route route[],  int *no_of_buses) {
 	ifstream fin;
 	fin.open("Password.dat", fstream::in | fstream::binary);
 	char pass[20], check[20];
@@ -391,11 +394,11 @@ int admin(int *no_of_buses) {
 		char option;
 		cin>>option;
 		if(option == '1')
-			add_bus_route(no_of_buses);
+			add_bus_route(file, bus, route, no_of_buses);
 		else if(option == '2')
-			delete_bus_route(no_of_buses);
+			delete_bus_route(file, bus, route, no_of_buses);
 		else if(option == '3')
-			display_bus_routes(no_of_buses);
+			display_bus_routes(bus, no_of_buses);
 		else if(option == '4')
 			change_password();
 		else if(option == '5') {
@@ -418,15 +421,15 @@ int admin(int *no_of_buses) {
 	}
 }
 
-int user(int *no_of_buses) {
+int user(Bus bus[], int *no_of_buses) {
 	system("clear");
 	cout<<"1. List all places\n2. List bus routes\n3. Go back\nChoose an option: ";
 	char option;
 	cin>>option;
 	if(option == '1')
-		list_all_places(no_of_buses);
+		list_all_places(bus, no_of_buses);
 	else if(option == '2') {
-		list_all_routes(no_of_buses);
+		list_all_routes(bus, no_of_buses);
 		return 1;
 	}
 	else if(option == '3')
@@ -441,6 +444,9 @@ int user(int *no_of_buses) {
 
 int main() {
 	system("clear");
+	Bus bus[100];
+	Route route[100];
+	fstream file;
 	file.open("Buses.dat", fstream::app | fstream::in | fstream::binary);
 	file.seekg(0, fstream::end);
 	int no_of_buses = 0, flag = 1, size = file.tellg();
@@ -452,7 +458,7 @@ int main() {
 		seek = file.tellg();
 	}
 	while(flag == 1)
-		flag = menu(&no_of_buses);
+		flag = menu(file, bus, route, &no_of_buses);
 	file.close();
 	return 0;
 }
