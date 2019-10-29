@@ -101,7 +101,7 @@ void list_all_places(Bus bus[] , int *no_of_buses) {
     cin.get();
 }
 
-class node* create_node(char x[]) {
+node* create_node(char x[]) {
     node* temp = (node*)malloc(sizeof(class node));
     strcpy(temp->place_name , x);
     temp->next = NULL;
@@ -188,7 +188,7 @@ void add_bus_route(fstream &file, Bus bus[], Route route[], int *no_of_buses) {
 		cin.get();
 		cout<<"Details of the bus were successfully added! Press any key to continue...";
 		cin.get();
-		insert_node(bus , no_of_buses);
+		insert_node(&bus[(*no_of_buses)-1] , no_of_buses);
 	}
 	else {
 		cin.get();
@@ -476,11 +476,12 @@ int user(Bus bus[], int *no_of_buses) {
 	}
 }
 
-int find(node* head , char x[]) {
+bool find(node* head , char x[]) {
+	int flag = 0;
     while(1) {
         if(strcasecmp(head->place_name , x)==0) {
-        		cin.get();
-            return 1;
+           flag = 1;
+           return flag;
         }
         else
         {
@@ -490,26 +491,29 @@ int find(node* head , char x[]) {
 }
 
 void insert_node(Bus bus[] , int* no_of_buses) {
-    for(int i=0 ; i<*no_of_buses ; i++) {
-        for(int j = 0 ; j<bus[i].no_of_bus_stops ; j++) {
-            if(find(head , bus[i].place_name[j])) {
-                if(head == NULL) {
-                    node* t = create_node(bus[i].place_name[j]);
-                    head = t;
-                }
-                else {
-                    node* ptr = head;
-                    while(ptr->next!=NULL) {
-                        ptr = ptr->next;
-                    }
-                    node* l = create_node(bus[i].place_name[j]);
-                    ptr->next = l;
-                    cin.get();           
-                }  
-            }
-        }    
-    }
+	for(int i=0 ; i<*no_of_buses ; i++) {
+		for(int j=0 ; j<bus[i].no_of_bus_stops ; j++) {
+			if(j==0) {
+				node* t = create_node(bus[i].place_name[j]);
+				head = t;
+			}
+			else {
+				if(find(head , bus[i].place_name[j]))
+					break;
+				else {
+					node* ptr = head;
+					node* n = create_node(bus[i].place_name[j]);
+					while(ptr->next!=NULL) {
+						ptr = ptr->next;
+					}
+					ptr->next = n;
+				}
+			}
+		}
+	}
 }
+		
+
 
 
 
