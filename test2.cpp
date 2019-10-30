@@ -4,15 +4,13 @@
 #include <string>
 #include <strings.h>
 #include <string.h>
-#include <iomanip>
 using namespace std;
 
 class node {
     public:
     char place_name[30];
     class node* next;
-};
-node* head = NULL;
+}*head;
 
 class Route {
 	public:
@@ -32,9 +30,10 @@ class Bus {
 };
 
 int menu(fstream &, Bus [], Route [], int *);
-void insert_node(Bus bus);
+void insert_node(Bus bus[] , int* );
 int user(Bus [], int *);
 int admin(fstream &, Bus [], Route [], int *);
+void insert_node(Bus, int *);
 
 Bus search_for_route(string route_num, Bus bus[], int *no_of_buses) {
     for(int i = 0; i < *no_of_buses; i++) {
@@ -84,30 +83,27 @@ void return_subsequent_timings(char place[], Bus bus[], int *no_of_buses, string
 }
 
 void list_all_places(Bus bus[] , int *no_of_buses) {
+	if(*no_of_buses == 0) {
+		cin.get();
+		cout<<"The directory is empty. Press any key to continue...";
+		cin.get();
+		return ;
+	}
 	 node* ptr = head;
 	 if(head == NULL) {
 	 	cin.get();
-	 	cout<<"No places are entered into the database..Press any key to continue...";
+	 	cout<<"The directory is empty. Press any key to continue...";
 	 	cin.get(); 
 	 	return;
 	 }
-    while(ptr->next!=NULL) {
-    	  cin.get();
+    while(ptr != NULL) {
         cout<<ptr->place_name<<endl;
         ptr = ptr->next;
     }
-    cout<<ptr->place_name<<endl;
+    cin.get();
     cout<<"Press any key to continue...";
     cin.get();
 }
-
-node* create_node(char x[]) {
-    node* temp = (node*)malloc(sizeof(class node));
-    strcpy(temp->place_name , x);
-    temp->next = NULL;
-    return temp;
-}
-
 
 void list_all_routes(Bus bus[], int *no_of_buses) {
 	system("clear");
@@ -188,7 +184,6 @@ void add_bus_route(fstream &file, Bus bus[], Route route[], int *no_of_buses) {
 		cin.get();
 		cout<<"Details of the bus were successfully added! Press any key to continue...";
 		cin.get();
-		insert_node(bus[*no_of_buses-1]);
 	}
 	else {
 		cin.get();
@@ -217,6 +212,8 @@ void delete_bus_route(fstream &file, Bus bus[], Route route[], int *no_of_buses)
 				cin.get();
 				cout<<"Details of the route number specified were deleted successfully. Press any key to continue...";
 				cin.get();
+				if(*no_of_buses == 0)
+					head = NULL;
 				file.close();
 				file.open("Buses.dat", fstream::in | fstream::out | fstream::trunc | fstream::binary);
 				file.close();
@@ -230,6 +227,8 @@ void delete_bus_route(fstream &file, Bus bus[], Route route[], int *no_of_buses)
 				}
 				*no_of_buses -= 1;
 				cin.get();
+				if(*no_of_buses == 0)
+					head = NULL;
 				cout<<"Details of the route number specified were deleted successfully. Press any key to continue...";
 				cin.get();
 				file.close();
@@ -247,8 +246,6 @@ void delete_bus_route(fstream &file, Bus bus[], Route route[], int *no_of_buses)
 	cout<<"Not found in the directory! Press any key to continue...";
 	cin.get();
 }
-
-
 
 void display_bus_routes(Bus bus[], int *no_of_buses) {
 	system("clear");
@@ -457,11 +454,16 @@ int admin(fstream &file, Bus bus[], Route route[],  int *no_of_buses) {
 
 int user(Bus bus[], int *no_of_buses) {
 	system("clear");
+	int i;
 	cout<<"1. List all places\n2. List bus routes\n3. Go back\nChoose an option: ";
 	char option;
 	cin>>option;
-	if(option == '1')
+	if(option == '1') {
+		for(i = 0; i < *no_of_buses; i++) {
+			insert_node(bus[i], no_of_buses);
+		}
 		list_all_places(bus, no_of_buses);
+	}
 	else if(option == '2') {
 		list_all_routes(bus, no_of_buses);
 		return 1;
@@ -476,65 +478,44 @@ int user(Bus bus[], int *no_of_buses) {
 	}
 }
 
-bool find(node* head , char x[]) {
+int find_place(node* Head, char x[]) {
     while(1) {
-        if(head==NULL)
-            break;
-        else if(strcasecmp(head->place_name , x)==0) {
-           return 1;
+        if(strcasecmp(Head->place_name, x) == 0) {
+           	return 0;
         }
-        else {
-            find(head->next , x);
+        else
+        {
+        	if(Head->next != NULL)
+        		return find_place(Head->next, x);
+        	else
+        		return 1;
         }
     }
-    return 0;
 }
 
-void insert_node(Bus bus) {
-	for(int j=0 ; j<bus.no_of_bus_stops ; j++) {
-		if(head==NULL) {
-			node* t = create_node(bus.place_name[j]);
+void insert_node(Bus Bus, int *no_of_buses) {
+	for(int i = 0; i < Bus.no_of_bus_stops; i++) {
+		if(head == NULL) {
+			node* t = new node;
+			t->next = NULL;
+			strcpy(t->place_name, Bus.place_name[i]);
 			head = t;
-            fstream file;
-            file.open("places.dat", fstream::app | fstream::binary);
-            file.write((char*)&bus.place_name, sizeof(bus.place_name));
-            file.close();
 		}
 		else {
-			if(find(head , bus.place_name[j]))
-				break;
-			else {
-                fstream file;
-                file.open("places.dat", fstream::app | fstream::binary);
-                file.write((char*)&bus.place_name, sizeof(bus.place_name));
-                file.close();
+			if(find_place(head, Bus.place_name[i])) {
 				node* ptr = head;
-				node* n = create_node(bus.place_name[j]);
-				while(ptr->next!=NULL) {
+				node* temp = new node;
+				temp->next = NULL;
+				strcpy(temp->place_name, Bus.place_name[i]);
+				while(ptr->next != NULL) {
 					ptr = ptr->next;
 				}
-				ptr->next = n;
+				ptr->next = temp;
 			}
+			else
+				continue ;
 		}
 	}
-}
-
-void make_linked_list() {
-    fstream file;
-    node* ptr = head;
-    file.open("places.dat", fstream::app | fstream::in | fstream::binary);
-    int seek = 0, size;
-    file.seekg(0, fstream::end);
-    size = file.tellg();
-    file.seekg(0);
-    while(seek!=size) {
-        file.read((char *)&ptr->place_name, sizeof(ptr->place_name));
-        node* ptr2 = new node;
-        ptr->next = ptr2;
-        ptr = ptr2;
-        seek = file.tellg();
-    }
-    file.close();
 }
 
 int main() {
@@ -542,6 +523,7 @@ int main() {
 	Bus bus[100];
 	Route route[100];
 	fstream file;
+	head = NULL;
 	file.open("Buses.dat", fstream::app | fstream::in | fstream::binary);
 	file.seekg(0, fstream::end);
 	int no_of_buses = 0, flag = 1, size = file.tellg();
@@ -552,9 +534,6 @@ int main() {
 		no_of_buses++;
 		seek = file.tellg();
 	}
-
-    make_linked_list();
-
 	while(flag == 1)
 		flag = menu(file, bus, route, &no_of_buses);
 	file.close();
